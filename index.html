@@ -1,0 +1,84 @@
+<HTML>
+
+                <body>
+
+                    <h3 id="show-peer"> Share screen</h3>
+                    <div style="display: flex;justify-content: space-around;margin: 10px;">
+                    
+                        <div style = "width:400px; height: 300px;border:2px solid red" id="ourVideo"></div>
+                        <div style = "width:400px; height: 300px;border:2px solid greenyellow" id="remoteVideo"></div>
+
+                    
+                    </div>
+
+                    <input id="peerID" placeholder="Peer ID">
+                    <button id="call-peer">Call Peer</button>
+                    <button onclick="shareScreen()">Share Screen </button>
+
+                </body>
+
+                <script src="https://unpkg.com/peerjs@1.3.1/dist/peerjs.min.js"></script>
+
+                <script>
+
+                    window.addEventListener('load',(event) =>{
+                        var peer = new Peer()
+
+                        peer.on("call",function(call){
+
+                            navigator.mediaDevices.getUserMedia({
+                                video:true,
+                                audio:true
+                            }).then((stream)=>{
+                                myStream = stream
+                                call.answer(stream)
+                                call.on('stream',function(remoteStream){
+                                    addRemoteVideo(remoteStram)
+                                })
+                            }).catch((err)=>{
+                                console.log(err+"Unable to get media.")
+                            })
+
+
+                        })
+
+                        peer.on('open',function(id){
+
+                            document.getElementById('show-peer').innerHTML =id
+                        })
+
+                        document.getElementById("call-peer").addEventListener('click',(e)=>{
+                            let remotePeerID = document.getElementById("peerID").value;
+                            document.getElementById("show-peer").innerHTML = "Connecting"+ remotePeerID;
+                            callPeer(remotePeerID);
+                        })
+                    });
+
+                    function callPeer(remotePeerID){
+                        navigator.mediaDevices.getUserMedia({
+                            video:true,
+                            audio:true
+                        }).then((stream)=>{
+                            //myStream = stream
+                            let call = peer.call (remotePeerID,stream)
+                            call.on('stream',function(remoteStream){
+                                addRemoteVideo(remoteStream)
+                            })
+                        }).catch((err)=>{
+                            console.log(err+"Unable to get media.")
+                        })
+
+
+                    }
+
+                    function addRemoteVideo(stream){
+                        let video = document.createElement("video");
+                        video.srcObject = stream;
+                        video.play()
+                        
+                        document.getElementById("remoteVideo").append(video)
+
+                    }
+
+
+                </script>
