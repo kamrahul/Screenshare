@@ -58,33 +58,6 @@ function notify(msg){
     }, 3000)
 }
 
-function joinRoomShare(){
-    console.log("Joining Room")
-    let room = document.getElementById("room-input").value;
-    if(room == " " || room == "")   {
-        alert("Please enter room number")
-        return;
-    }
-    room_id = PRE+room+SUF;
-    hideModal()
-    let peer = new Peer()
-    peer.on('open', (id)=>{
-        console.log("Connected with Id: "+id)
-        getUserMedia({video: true, audio: true}, (stream)=>{
-            local_stream = stream;
-            setLocalStream(local_stream)
-            notify("Joining peer")
-            let call = peer.call(room_id, stream)
-            call.on('stream', (stream)=>{
-                setRemoteStream(stream);
-            })
-        }, (err)=>{
-            console.log(err)
-        })
-
-    })
-}
-
 function joinRoom(){
     console.log("Joining Room")
     let room = document.getElementById("room-input").value;
